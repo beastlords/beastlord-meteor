@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Meteor } from 'meteor/meteor';
 import createHistory from 'history/createBrowserHistory'
-
+import { Card, Form } from 'semantic-ui-react'
 
 export default class SignIn extends Component {
   constructor(props) {
@@ -13,16 +13,21 @@ export default class SignIn extends Component {
     this.history = createHistory();
   }
 
+  componentWillReceiveProps(nextProps){
+    if(Meteor.userId()){
+      this.props.history.push("/")
+    }
+  }
+
   submitForm = (e) => {
     e.preventDefault();
     const self = this;
     Meteor.loginWithPassword(this.state.user, this.state.password, (err, res) => {
       if (!err) {
         console.log("Hejsan")
-        self.history.push('/');
       } else {
         if (err.error === 400) {
-          alert("Placeholder för snygg notification\nAnvändarnamn(email?) eller lösenord var felaktigt...")
+
         }
         console.warn(err);
       }
@@ -34,15 +39,17 @@ export default class SignIn extends Component {
   }
 
   render() {
-    if (Meteor.userId) {
-      this.history.push("/");
-    }
+    
     return (
-      <form className="form" onSubmit={this.submitForm}>
-        <input name="user" placeholder="Användare" className="form-control" value={this.state.user} onChange={this.handleInputChange} />
-        <input name="password" placeholder="Lösenord" value={this.state.password} onChange={this.handleInputChange} />
-        <input type="submit" className="btn" value="Sign in" />
-      </form>
+      <Card centered>
+        <Card.Content header="Sign in" />
+        <Card.Content description={
+          <Form>
+            <Form.Input label="User" placeholder="Derp"/>
+            <Form.Input label="Password" type="password" placeholder="Durp" />
+          </Form>
+        } />
+      </Card>
     )
   }
 }
